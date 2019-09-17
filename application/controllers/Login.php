@@ -9,7 +9,6 @@ class Login extends CI_Controller {
     {
         parent::__construct();
         $this->load->model('User');
-        
     }
 
     public function index(){
@@ -21,38 +20,41 @@ class Login extends CI_Controller {
     }
     
 
-    public function login()
-    {
-        $this->form_validation->set_rules('username', 'username', 'trim|required');
-        $this->form_validation->set_rules('password', 'password', 'trim|required');
-        $this->form_validation->set_error_delimiters('<div class="error">', '</div');
-        $this->form_validation->set_message('required','Enter %s');
-
-        if ($this->form_validation->run() === FALSE) {
-            $this->load->view('login');
+    public function auth(){
+        $this->form_validation->set_rules('username', 'username', 'trim|required|min_length[5]|max_length[20]');
+        $this->form_validation->set_rules('password', 'password', 'trim|required|min_length[5]|max_length[50]');
+        
+        if ($this->form_validation->run() == FALSE) {
+            
+            redirect('Login','refresh');
             
         } else {
-            $data = array(
-            'username' => $this->input->post('username'),
-            'password' => md5($this->input->post('password')),
-            );
+            $username = $this->input->post('username',TRUE);
+            $password = md5($this->input->post('password',TRUE));
+            $validate = $this->User->cek_user($username,$password);
+            if($validate->num_rows()>0){
+                $data = $validate->row_array();
+                $nik = $data['nik'];
+                $username = $data['username'];
+                $session_data = array(
+                    'nik' => $nik,
+                    'usernama' => $username,
+                    'logged_in' => TRUE
+                );
+                $this->session->set_userdata($session_data);
+            }
+            else{
+                echo $this->session->set_flashdata('msg1','
+            <div class="alert alert-danger">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                Username or password is incorrect.
+              </div>
+              ');
+            redirect('Login','refresh');
+            }
         }
         
-        $login = $this->User->cek_user('$username', $password);
-        if(!empty($login)){
-            $row = $login->row(1);
-            $data = array(
-                'nama' => $row->nama
-            );
-            $this->session->set_userdata( $login );
-            
-            redirect('Dashboard','refresh');
-            
-        }else{
-            $this->session->set_flashdata('gagal', 'Username atau Password Salah!');
-            redirect(base_url('login'));
-            
-        }
+        
     }
 
     public function logout(){

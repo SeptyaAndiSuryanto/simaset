@@ -6,16 +6,18 @@
       <div class="login_wrapper">
         <div class="animate form login_form">
           <section class="login_content">
-            <form action="<?php echo base_url();?>Login/login" method="post">
+            <form action="<?php echo base_url();?>Login/auth" method="POST">
               <h1>Login Form</h1>
+              <?php if(isset($error)) {echo $error; }; ?>
+              <?php echo $this->session->flashdata('msg1');?>
               <div>
-                <input type="text" class="form-control" name="username" placeholder="Username" required="" />
+                <input type="text" class="form-control" name="username" id="username" placeholder="Username" autofocus required />
               </div>
               <div>
-                <input type="password" class="form-control" name="password" placeholder="Password" required="" />
+                <input type="password" class="form-control" name="password" id="password" placeholder="Password" required/>
               </div>
               <div>
-                <button type="submit" class="btn btn-default submit">Log in</button>
+                <button type="submit" class="btn btn-default submit" name="btn-login">Log in</button>
                 <a class="reset_pass" href="#">Lost your password?</a>
               </div>
 
