@@ -6,7 +6,7 @@
       <div class="login_wrapper">
         <div class="animate form login_form">
           <section class="login_content">
-            <form action="<?php echo base_url();?>Login/auth" method="POST">
+            <form action="<?php echo base_url('Login/auth');?>" method="POST">
               <h1>Login Form</h1>
               <?php if(isset($error)) {echo $error; }; ?>
               <?php echo $this->session->flashdata('msg1');?>
@@ -18,7 +18,8 @@
               </div>
               <div>
                 <button type="submit" class="btn btn-default submit" name="btn-login">Log in</button>
-                <a class="reset_pass" href="#">Lost your password?</a>
+                <a href="<?=base_url('Login')?>"><button class="btn btn-default submit" name="btn-login">Forgot Password</button></a>
+                <!-- <a class="reset_pass" href="#">Lost your password?</a> -->
               </div>
 
               <div class="clearfix"></div>

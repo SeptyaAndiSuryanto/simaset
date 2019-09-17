@@ -12,17 +12,21 @@ class Login extends CI_Controller {
     }
 
     public function index(){
-        $this->load->view('template/header');
-        // $this->load->view('template/side_nav');
-        // $this->load->view('template/top_nav');
-        $this->load->view('login');
-        $this->load->view('template/footer');
+        if($this->session->userdata('role') === '1'){
+            redirect('Dashboard');
+        }elseif($this->session->userdata('role')==='2'){
+            $this->load->view('2');
+        }else{
+            $this->load->view('template/header');
+            $this->load->view('login');
+            $this->load->view('template/footer');
+        }
     }
     
 
     public function auth(){
-        $this->form_validation->set_rules('username', 'username', 'trim|required|min_length[5]|max_length[20]');
-        $this->form_validation->set_rules('password', 'password', 'trim|required|min_length[5]|max_length[50]');
+        $this->form_validation->set_rules('username', 'username', 'trim|required');
+        $this->form_validation->set_rules('password', 'password', 'trim|required');
         
         if ($this->form_validation->run() == FALSE) {
             
@@ -36,14 +40,23 @@ class Login extends CI_Controller {
                 $data = $validate->row_array();
                 $nik = $data['nik'];
                 $username = $data['username'];
+                $role = $data['role'];
                 $session_data = array(
                     'nik' => $nik,
                     'usernama' => $username,
+                    'role' => $role,
                     'logged_in' => TRUE
                 );
                 $this->session->set_userdata($session_data);
-            }
-            else{
+                if($role === '1'){
+                    // echo "Welcome ".$session_data['username'].". You're Admin!";
+                    redirect('Roles');
+                }else{
+                    // echo "Welcome ".$session_data['username'];
+                    echo "Who are you?";
+                }
+
+            }else{
                 echo $this->session->set_flashdata('msg1','
             <div class="alert alert-danger">
                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -59,6 +72,9 @@ class Login extends CI_Controller {
 
     public function logout(){
         $this->session->sess_destroy();
+        
+        redirect('Login','refresh');
+        
     }
 }
 
